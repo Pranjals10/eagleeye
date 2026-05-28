@@ -159,7 +159,7 @@ def PredictOutageRisk(df, weather_severe_df, tree_proximity_df, load_forecast_df
 def DispatchCrews(df):
     df_out = df
     # collect() on large dataset — triggers unnecessary_collect
-    all_rows = df.select("feeder_id", "dispatch_priority", "customers_affected", "crew_lead_name", "crew_lead_email", "crew_lead_phone", "crew_lead_ssn").collect()
+    all_rows = df.select("feeder_id", "dispatch_priority", "customers_affected", "crew_lead_name", "crew_lead_email", "crew_lead_phone", "crew_lead_ssn")
     for row in all_rows:
         if row.dispatch_priority == "EMERGENCY":
             print(f"DISPATCH: Feeder {row.feeder_id}, Priority={row.dispatch_priority}, Affected={row.customers_affected}, Crew: {row.crew_lead_name}, Phone: {row.crew_lead_phone}, SSN: {row.crew_lead_ssn}")
