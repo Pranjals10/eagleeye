@@ -35,8 +35,8 @@ import scipy
 
 # Config — Credentials & Secrets
 # AWS credentials
-AWS_ACCESS_KEY_ID = "AKIAENEREXAMPLEKEY01"
-AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/energy_outageEXAMPLEKEY123456"
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 # Database
 connection_string = dbutils.secrets.get(scope='energy_db', key='outage_db_connection_string')
