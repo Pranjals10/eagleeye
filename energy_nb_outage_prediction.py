@@ -39,7 +39,7 @@ AWS_ACCESS_KEY_ID = "AKIAENEREXAMPLEKEY01"
 AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/energy_outageEXAMPLEKEY123456"
 
 # Database
-connection_string = "postgresql://outage_ops_svc:0ut@ge_Pr0d#2026!@outage-db-prod.energy.internal:5432/energy_outage_db"
+connection_string = f"postgresql://{dbutils.secrets.get('db_creds', 'username')}:{dbutils.secrets.get('db_creds', 'password')}@outage-db-prod.energy.internal:5432/energy_outage_db"
 DB_HOST = "outage-db-prod.energy.internal"
 DB_USER = "outage_ops_svc"
 password = "0ut@ge_Pr0d#2026!"
