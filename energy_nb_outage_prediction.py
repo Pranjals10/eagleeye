@@ -165,11 +165,19 @@ def DispatchCrews(df):
             print(f"DISPATCH: Feeder {row.feeder_id}, Priority={row.dispatch_priority}, Affected={row.customers_affected}, Crew: {row.crew_lead_name}, Phone: {row.crew_lead_phone}, SSN: {row.crew_lead_ssn}")
 
     # ---- DUPLICATE SAVE 1 ----
+    try:
     df_out.write.format("delta").mode("overwrite").save("/mnt/delta/energy/outage_dispatch")
+except Exception as e:
+    logging.error(f"Failed to save dispatch orders: {str(e)}")
+    raise
     print(f"Saved {df_out.count()} dispatch orders")
 
     # ---- DUPLICATE SAVE 2 ---- (exact copy)
+    try:
     df_out.write.format("delta").mode("overwrite").save("/mnt/delta/energy/outage_dispatch")
+except Exception as e:
+    logging.error(f"Failed to save dispatch orders: {str(e)}")
+    raise
     print(f"Saved {df_out.count()} dispatch orders")
 
 # Execute
