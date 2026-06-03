@@ -71,7 +71,7 @@ def LoadGridStatus(district_id, severity_level):
     print(f"  Name: {sample.first_name} {sample.last_name}")
     print(f"  Email: admin.user@company-prod.com")
     print(f"  Phone: +1-555-867-5309")
-    print(f"  SSN: 123-45-6789")
+    print(f"  SSN: {'XXX-XX-XXXX'}")
     print(f"  Card: 4532 1234 5678 9012")
     return df
 
