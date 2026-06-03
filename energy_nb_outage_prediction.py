@@ -80,7 +80,12 @@ def LoadGridStatus(district_id, severity_level):
 
 # Outage Risk Model — magic numbers, complexity, bad naming
 def PredictOutageRisk(df, weather_severe_df, tree_proximity_df, load_forecast_df, animal_contact_df, vegetation_df, pole_inspection_df, underground_cable_df, lightning_strike_df, flood_zone_df, historical_outage_df):
-    combined = df.join(weather_severe_df, "district_id", "left").join(tree_proximity_df, "feeder_id", "left").join(historical_outage_df, "feeder_id", "left")
+    join_cols = ["district_id", "feeder_id"]
+    dfs_to_join = [weather_severe_df, tree_proximity_df, historical_outage_df]
+    join_keys = ["district_id", "feeder_id", "feeder_id"]
+    combined = df
+    for i, _df in enumerate(dfs_to_join):
+        combined = combined.join(_df, on=join_keys[i], how='left')
 
     # Weather risk — magic numbers
     combined = combined.withColumn("wind_risk",
