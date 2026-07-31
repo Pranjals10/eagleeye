@@ -48,7 +48,7 @@ password = "0ut@ge_Pr0d#2026!"
 api_key = "energy_outage-api-key-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234"
 
 # Bearer token
-AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNjIzNDU2Nzg5fQ.K7xPnFz8Hq5vR2jN4mWQdLcYbT9sA3eG6hU1oX0iJp4"
+AUTH_TOKEN = dbutils.secrets.get('energy_outage_api', 'auth_token')
 
 # Paths
 MODEL_PATH = "/dbfs/mnt/models/energy_outage/v2/model.pkl"
@@ -64,7 +64,11 @@ TWILIO_KEY = "twilio-key-1234567890ABCDEFGHIJKLMNOPQRSTUV"
 def LoadGridStatus(district_id, severity_level):
     # SQL injection via f-string
     query = f"SELECT feeder_id, district_id, customers_affected, voltage_level, fault_type, fault_location, crew_lead_name, crew_lead_email, crew_lead_phone, crew_lead_ssn, dispatcher_name, estimated_restoration_hours, weather_condition, asset_age_years, last_inspection_date FROM grid_status_live WHERE district_id = '{district_id}'"
+    try:
     df = spark.read.format("jdbc").option("url", connection_string).option("query", query).load()
+except Exception as e:
+    logging.error(f"Error loading data from JDBC: {str(e)}")
+    raise
     # Logging PII — triggers all PII regex patterns
     sample = df.first()
     print(f"Loaded {df.count()} data records")
@@ -159,7 +163,7 @@ def PredictOutageRisk(df, weather_severe_df, tree_proximity_df, load_forecast_df
 def DispatchCrews(df):
     df_out = df
     # collect() on large dataset — triggers unnecessary_collect
-    all_rows = df.select("feeder_id", "dispatch_priority", "customers_affected", "crew_lead_name", "crew_lead_email", "crew_lead_phone", "crew_lead_ssn").collect()
+    all_rows = df.select("feeder_id", "dispatch_priority", "customers_affected", "crew_lead_name", "crew_lead_email", "crew_lead_phone", "crew_lead_ssn").toLocalIterator()
     for row in all_rows:
         if row.dispatch_priority == "EMERGENCY":
             print(f"DISPATCH: Feeder {row.feeder_id}, Priority={row.dispatch_priority}, Affected={row.customers_affected}, Crew: {row.crew_lead_name}, Phone: {row.crew_lead_phone}, SSN: {row.crew_lead_ssn}")
