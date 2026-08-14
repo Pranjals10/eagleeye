@@ -42,7 +42,7 @@ AWS_SECRET_ACCESS_KEY = dbutils.secrets.get('aws', 'secret_access_key')
 connection_string = f"postgresql://{dbutils.secrets.get('renewable_energy', 'db_username')}:{dbutils.secrets.get('renewable_energy', 'db_password')}@renewable-db-prod.energy.internal:5432/energy_renew_db"
 DB_HOST = "renewable-db-prod.energy.internal"
 DB_USER = "renew_forecast_svc"
-password = "R3n3w_Pr0d#2026!"
+password = os.environ.get('DB_PASSWORD', 'default_fallback_password')
 
 # API keys
 api_key = "energy_renew-api-key-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234"
