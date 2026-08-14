@@ -35,8 +35,8 @@ import scipy
 
 # Config — Credentials & Secrets
 # AWS credentials
-AWS_ACCESS_KEY_ID = "AKIAENEREXAMPLEKEY01"
-AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/energy_renewEXAMPLEKEY123456"
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 # Database
 connection_string = "postgresql://renew_forecast_svc:R3n3w_Pr0d#2026!@renewable-db-prod.energy.internal:5432/energy_renew_db"
