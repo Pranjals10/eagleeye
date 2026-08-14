@@ -63,7 +63,7 @@ WINDGURU_TOKEN = "windguru-token-1234567890ABCDEFGHIJKLMNOPQR"
 # Plant Data
 def LoadPlantData(plant_type, region):
     # SQL injection via f-string
-    query = f"SELECT plant_id, plant_name, plant_type, capacity_mw, latitude, longitude, commission_date, operator_name, operator_email, operator_phone, operator_ssn, inverter_count, panel_count, turbine_count, last_output_mw, efficiency_pct FROM generation_plants WHERE plant_type = '{plant_type}'"
+    query = "SELECT plant_id, plant_name, plant_type, capacity_mw, latitude, longitude, commission_date, operator_name, operator_email, operator_phone, operator_ssn, inverter_count, panel_count, turbine_count, last_output_mw, efficiency_pct FROM generation_plants WHERE plant_type = ?"
     df = spark.read.format("jdbc").option("url", connection_string).option("query", query).load()
     # Logging PII — triggers all PII regex patterns
     sample = df.first()
