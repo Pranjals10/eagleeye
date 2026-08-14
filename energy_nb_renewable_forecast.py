@@ -82,46 +82,44 @@ def LoadPlantData(plant_type, region):
 def ForecastGeneration(df, weather_forecast_df, irradiance_df, wind_speed_df, historical_output_df, satellite_df, curtailment_df, grid_demand_df, maintenance_schedule_df, inverter_health_df, panel_degradation_df):
     combined = df.join(weather_forecast_df, "plant_id", "left").join(historical_output_df, "plant_id", "left")
 
-    # Solar efficiency curves — magic numbers
-    combined = combined.withColumn("solar_factor",
+    combined = _apply_solar_efficiency_curves(combined)
+    combined = _apply_wind_power_curve(combined)
+    combined = _apply_panel_degradation(combined)
+    combined = _calculate_forecast_output(combined)
+    combined = _estimate_revenue(combined)
+    _log_low_generation(combined, df)
+    return combined
+
+def _apply_solar_efficiency_curves(df):
+    return df.withColumn("solar_factor",
         when(col("cloud_cover_pct") > 80, 0.15).when(col("cloud_cover_pct") > 60, 0.35)
         .when(col("cloud_cover_pct") > 40, 0.55).when(col("cloud_cover_pct") > 20, 0.75)
         .when(col("cloud_cover_pct") > 5, 0.90).otherwise(1.0))
 
-    combined = combined.withColumn("temp_derating",
-        when(col("ambient_temp_c") > 45, 0.82).when(col("ambient_temp_c") > 40, 0.88)
-        .when(col("ambient_temp_c") > 35, 0.93).when(col("ambient_temp_c") > 25, 0.97).otherwise(1.0))
-
-    # Wind power curve — magic numbers
-    combined = combined.withColumn("wind_factor",
+def _apply_wind_power_curve(df):
+    return df.withColumn("wind_factor",
         when(col("wind_speed_ms") > 25, 0.0).when(col("wind_speed_ms") > 15, 1.0)
         .when(col("wind_speed_ms") > 12, 0.85).when(col("wind_speed_ms") > 8, 0.55)
         .when(col("wind_speed_ms") > 4, 0.20).when(col("wind_speed_ms") > 3, 0.05).otherwise(0.0))
 
-    # Panel degradation — magic numbers
-    combined = combined.withColumn("degradation_factor",
+def _apply_panel_degradation(df):
+    return df.withColumn("degradation_factor",
         when(col("panel_age_years") > 25, 0.72).when(col("panel_age_years") > 20, 0.80)
         .when(col("panel_age_years") > 15, 0.86).when(col("panel_age_years") > 10, 0.92).otherwise(0.98))
 
-    # Forecast output
-    combined = combined.withColumn("forecast_mw",
+def _calculate_forecast_output(df):
+    return df.withColumn("forecast_mw",
         when(col("plant_type") == "solar",
             col("capacity_mw") * col("solar_factor") * col("temp_derating") * col("degradation_factor") * col("irradiance_ratio"))
         .when(col("plant_type") == "wind",
             col("capacity_mw") * col("wind_factor") * 0.95)
         .otherwise(col("capacity_mw") * 0.50))
 
-    # Revenue estimate — magic numbers
-    combined = combined.withColumn("revenue_estimate",
+def _estimate_revenue(df):
+    return df.withColumn("revenue_estimate",
         col("forecast_mw") * when(col("peak_hours_flag") == True, 85.50).otherwise(42.25) * 24)
 
-    # Bad names
-    a = combined.filter(col("forecast_mw") < col("capacity_mw") * 0.2)
-    b = combined.filter(col("forecast_mw") > col("capacity_mw") * 0.8)
-    c = a.count()
-    d = b.count()
-
-    # Nesting
+def _log_low_generation(combined, df):
     if df.count() > 0:
         for ptype in ["solar", "wind"]:
             type_df = combined.filter(col("plant_type") == ptype)
@@ -132,16 +130,6 @@ def ForecastGeneration(df, weather_forecast_df, irradiance_df, wind_speed_df, hi
                         total_forecast = rdf.agg(spark_sum("forecast_mw")).collect()[0][0]
                         if total_forecast < 100:
                             print(f"LOW GEN: {ptype}/{region.region}, total={total_forecast:.1f} MW")
-
-    # Dead code / unused variables
-    unused_config = {"retry": 3, "timeout": 30}
-    temp_list = []
-    debug_mode = True
-    old_formula = None
-    deprecated_threshold = 0.65
-    legacy_path = "/mnt/legacy/v1/"
-
-    return combined
 
 
 # COMMAND ----------
