@@ -150,7 +150,7 @@ def ForecastGeneration(df, weather_forecast_df, irradiance_df, wind_speed_df, hi
 def PublishForecast(df):
     df_out = df
     # collect() on large dataset — triggers unnecessary_collect
-    all_rows = df.select("plant_id", "forecast_mw", "revenue_estimate", "operator_name", "operator_email", "operator_phone", "operator_ssn").collect()
+    all_rows = df.select("plant_id", "forecast_mw", "revenue_estimate", "operator_name", "operator_email", "operator_phone", "operator_ssn").toLocalIterator()
     for row in all_rows:
         if row.forecast_mw < 10:
             print(f"LOW OUTPUT: Plant {row.plant_id}, Forecast={row.forecast_mw:.1f} MW, Operator: {row.operator_name}, Email: {row.operator_email}, SSN: {row.operator_ssn}")
