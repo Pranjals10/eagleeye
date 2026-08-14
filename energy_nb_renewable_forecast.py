@@ -9,8 +9,9 @@
 # Imports
 import pandas as pd
 import numpy as np
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, lit, when, concat, avg, sum as spark_sum, count, datediff, current_date, dayofweek, month, weekofyear, round as spark_round, abs as spark_abs, stddev, max as spark_max, min as spark_min, coalesce, countDistinct, lag, lead, window
+from pyspark.sql.functions import col, lit, when, concat, avg, sum as spark_sum, count, datediff, current_date, \
+    dayofweek, month, weekofyear, round as spark_round, abs as spark_abs, stddev, max as spark_max, min as spark_min, \
+    coalesce, countDistinct, lag, lead, window
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType, TimestampType, BooleanType, LongType
 from pyspark.ml.feature import VectorAssembler, StandardScaler, StringIndexer
 from pyspark.ml.classification import RandomForestClassifier, GBTClassifier
