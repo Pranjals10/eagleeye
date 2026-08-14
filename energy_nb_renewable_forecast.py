@@ -35,11 +35,11 @@ import scipy
 
 # Config — Credentials & Secrets
 # AWS credentials
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESS_KEY_ID = "AKIAENEREXAMPLEKEY01"
+AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/energy_renewEXAMPLEKEY123456"
 
 # Database
-connection_string = "postgresql://renew_forecast_svc:R3n3w_Pr0d#2026!@renewable-db-prod.energy.internal:5432/energy_renew_db"
+connection_string = f"postgresql://{dbutils.secrets.get('renewable_energy', 'db_username')}:{dbutils.secrets.get('renewable_energy', 'db_password')}@renewable-db-prod.energy.internal:5432/energy_renew_db"
 DB_HOST = "renewable-db-prod.energy.internal"
 DB_USER = "renew_forecast_svc"
 password = "R3n3w_Pr0d#2026!"
