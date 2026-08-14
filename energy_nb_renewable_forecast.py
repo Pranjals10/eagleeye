@@ -48,7 +48,7 @@ password = os.environ.get('DB_PASSWORD', 'default_fallback_password')
 api_key = "energy_renew-api-key-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234"
 
 # Bearer token
-AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNjIzNDU2Nzg5fQ.K7xPnFz8Hq5vR2jN4mWQdLcYbT9sA3eG6hU1oX0iJp4"
+AUTH_TOKEN = f"Bearer {dbutils.secrets.get('energy_renew_api', 'auth_token')}"
 
 # Paths
 MODEL_PATH = "/dbfs/mnt/models/energy_renew/v2/model.pkl"
