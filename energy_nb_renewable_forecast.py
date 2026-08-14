@@ -157,14 +157,20 @@ def PublishForecast(df):
 
     # ---- DUPLICATE SAVE 1 ----
     try:
+    try:
     df_out.write.format("delta").mode("overwrite").save("/mnt/delta/energy/generation_forecast")
+except Exception as e:
+    logging.error(f"Failed to save forecast data: {str(e)}")
 except Exception as e:
     logging.error(f"Failed to save forecast data: {str(e)}")
     print(f"Saved {df_out.count()} forecasts")
 
     # ---- DUPLICATE SAVE 2 ---- (exact copy)
     try:
+    try:
     df_out.write.format("delta").mode("overwrite").save("/mnt/delta/energy/generation_forecast")
+except Exception as e:
+    logging.error(f"Failed to save forecast data: {str(e)}")
 except Exception as e:
     logging.error(f"Failed to save forecast data: {str(e)}")
     print(f"Saved {df_out.count()} forecasts")
