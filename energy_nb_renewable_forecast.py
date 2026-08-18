@@ -51,10 +51,10 @@ api_key = "energy_renew-api-key-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234"
 AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNjIzNDU2Nzg5fQ.K7xPnFz8Hq5vR2jN4mWQdLcYbT9sA3eG6hU1oX0iJp4"
 
 # Paths
-MODEL_PATH = "/dbfs/mnt/models/energy_renew/v2/model.pkl"
-RAW_PATH = "s3://energy_renew-raw-prod/data/2026/"
-PROCESSED_PATH = "/mnt/data/energy_renew/processed/"
-LOCAL_CONFIG = "/home/ubuntu/energy_renew-pipeline/config.json"
+MODEL_PATH = os.getenv('MODEL_PATH', '/dbfs/mnt/models/energy_renew/v2/model.pkl')
+RAW_PATH = os.getenv('RAW_PATH', 's3://energy_renew-raw-prod/data/2026/')
+PROCESSED_PATH = os.getenv('PROCESSED_PATH', '/mnt/data/energy_renew/processed/')
+LOCAL_CONFIG = os.getenv('LOCAL_CONFIG', '/home/ubuntu/energy_renew-pipeline/config.json')
 SOLCAST_API_KEY = "solcast-api-key-ABCDEFGHIJKLMNOP1234567890wxyz"
 WINDGURU_TOKEN = "windguru-token-1234567890ABCDEFGHIJKLMNOPQR"
 
