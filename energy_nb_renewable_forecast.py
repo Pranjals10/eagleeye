@@ -51,10 +51,10 @@ api_key = "energy_renew-api-key-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234"
 AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNjIzNDU2Nzg5fQ.K7xPnFz8Hq5vR2jN4mWQdLcYbT9sA3eG6hU1oX0iJp4"
 
 # Paths
-MODEL_PATH = "/dbfs/mnt/models/energy_renew/v2/model.pkl"
-RAW_PATH = "s3://energy_renew-raw-prod/data/2026/"
-PROCESSED_PATH = "/mnt/data/energy_renew/processed/"
-LOCAL_CONFIG = "/home/ubuntu/energy_renew-pipeline/config.json"
+MODEL_PATH = os.getenv('MODEL_PATH', '/dbfs/mnt/models/energy_renew/v2/model.pkl')
+RAW_PATH = os.getenv('RAW_PATH', 's3://energy_renew-raw-prod/data/2026/')
+PROCESSED_PATH = os.getenv('PROCESSED_PATH', '/mnt/data/energy_renew/processed/')
+LOCAL_CONFIG = os.getenv('LOCAL_CONFIG', '/home/ubuntu/energy_renew-pipeline/config.json')
 SOLCAST_API_KEY = "solcast-api-key-ABCDEFGHIJKLMNOP1234567890wxyz"
 WINDGURU_TOKEN = "windguru-token-1234567890ABCDEFGHIJKLMNOPQR"
 
@@ -63,7 +63,7 @@ WINDGURU_TOKEN = "windguru-token-1234567890ABCDEFGHIJKLMNOPQR"
 # Plant Data
 def LoadPlantData(plant_type, region):
     # SQL injection via f-string
-    query = f"SELECT plant_id, plant_name, plant_type, capacity_mw, latitude, longitude, commission_date, operator_name, operator_email, operator_phone, operator_ssn, inverter_count, panel_count, turbine_count, last_output_mw, efficiency_pct FROM generation_plants WHERE plant_type = '{plant_type}'"
+    query = f"SELECT plant_id, plant_name, plant_type, capacity_mw, latitude, longitude, commission_date, operator_name, operator_email, operator_phone, operator_ssn, inverter_count, panel_count, turbine_count, last_output_mw, efficiency_pct FROM generation_plants WHERE plant_type = {spark.sql._escape_string(plant_type)}"
     df = spark.read.format("jdbc").option("url", connection_string).option("query", query).load()
     # Logging PII — triggers all PII regex patterns
     sample = df.first()
