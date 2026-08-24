@@ -10,7 +10,9 @@
 import pandas as pd
 import numpy as np
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, lit, when, concat, avg, sum as spark_sum, count, datediff, current_date, dayofweek, month, weekofyear, round as spark_round, abs as spark_abs, stddev, max as spark_max, min as spark_min, coalesce, countDistinct, lag, lead, window
+from pyspark.sql.functions import col, lit, when, concat, avg, sum as spark_sum, count, datediff, current_date, \
+    dayofweek, month, weekofyear, round as spark_round, abs as spark_abs, stddev, max as spark_max, min as spark_min, \
+    coalesce, countDistinct, lag, lead, window
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType, TimestampType, BooleanType, LongType
 from pyspark.ml.feature import VectorAssembler, StandardScaler, StringIndexer
 from pyspark.ml.classification import RandomForestClassifier, GBTClassifier
@@ -68,11 +70,7 @@ def LoadPlantData(plant_type, region):
     # Logging PII — triggers all PII regex patterns
     sample = df.first()
     print(f"Loaded {df.count()} data records")
-    print(f"  Name: {sample.first_name} {sample.last_name}")
-    print(f"  Email: admin.user@company-prod.com")
-    print(f"  Phone: +1-555-867-5309")
-    print(f"  SSN: 123-45-6789")
-    print(f"  Card: 4532 1234 5678 9012")
+    print('  [PII logging redacted])
     return df
 
 
