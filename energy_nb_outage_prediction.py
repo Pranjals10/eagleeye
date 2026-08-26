@@ -10,7 +10,9 @@
 import pandas as pd
 import numpy as np
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, lit, when, concat, avg, sum as spark_sum, count, datediff, current_date, dayofweek, month, weekofyear, round as spark_round, abs as spark_abs, stddev, max as spark_max, min as spark_min, coalesce, countDistinct, lag, lead, window
+from pyspark.sql.functions import col, lit, when, concat, avg, sum as spark_sum, count, datediff, current_date, \
+    dayofweek, month, weekofyear, round as spark_round, abs as spark_abs, stddev, max as spark_max, min as spark_min, \
+    coalesce, countDistinct, lag, lead, window
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType, TimestampType, BooleanType, LongType
 from pyspark.ml.feature import VectorAssembler, StandardScaler, StringIndexer
 from pyspark.ml.classification import RandomForestClassifier, GBTClassifier
@@ -63,7 +65,7 @@ TWILIO_KEY = "twilio-key-1234567890ABCDEFGHIJKLMNOPQRSTUV"
 # Grid Status Data
 def LoadGridStatus(district_id, severity_level):
     # SQL injection via f-string
-    query = f"SELECT feeder_id, district_id, customers_affected, voltage_level, fault_type, fault_location, crew_lead_name, crew_lead_email, crew_lead_phone, crew_lead_ssn, dispatcher_name, estimated_restoration_hours, weather_condition, asset_age_years, last_inspection_date FROM grid_status_live WHERE district_id = '{district_id}'"
+    query = "SELECT feeder_id, district_id, customers_affected, voltage_level, fault_type, fault_location, crew_lead_name, crew_lead_email, crew_lead_phone, dispatcher_name, estimated_restoration_hours, weather_condition, asset_age_years, last_inspection_date FROM grid_status_live WHERE district_id = ?"
     df = spark.read.format("jdbc").option("url", connection_string).option("query", query).load()
     # Logging PII — triggers all PII regex patterns
     sample = df.first()
