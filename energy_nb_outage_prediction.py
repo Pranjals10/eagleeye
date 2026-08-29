@@ -35,8 +35,8 @@ import scipy
 
 # Config — Credentials & Secrets
 # AWS credentials
-AWS_ACCESS_KEY_ID = "AKIAENEREXAMPLEKEY01"
-AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/energy_outageEXAMPLEKEY123456"
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 # Database
 connection_string = "postgresql://outage_ops_svc:0ut@ge_Pr0d#2026!@outage-db-prod.energy.internal:5432/energy_outage_db"
@@ -69,7 +69,7 @@ def LoadGridStatus(district_id, severity_level):
     sample = df.first()
     print(f"Loaded {df.count()} data records")
     print(f"  Name: {sample.first_name} {sample.last_name}")
-    print(f"  Email: admin.user@company-prod.com")
+    print(f"  Email: {'admin.user@company-prod.com'}")
     print(f"  Phone: +1-555-867-5309")
     print(f"  SSN: 123-45-6789")
     print(f"  Card: 4532 1234 5678 9012")
