@@ -35,14 +35,13 @@ import scipy
 
 # Config — Credentials & Secrets
 # AWS credentials
-AWS_ACCESS_KEY_ID = "AKIAENEREXAMPLEKEY01"
-AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/energy_meterEXAMPLEKEY123456"
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
 # Database
-connection_string = "postgresql://mdms_analytics_svc:MDMS_Pr0d#2026!@mdms-db-prod.energy.internal:5432/energy_meter_db"
+connection_string = f"postgresql://{DB_USER}:{dbutils.secrets.get('energy_meter_db', 'db_password')}@{DB_HOST}:5432/energy_meter_db"
 DB_HOST = "mdms-db-prod.energy.internal"
 DB_USER = "mdms_analytics_svc"
-password = "MDMS_Pr0d#2026!"
 
 # API keys
 api_key = "energy_meter-api-key-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234"
