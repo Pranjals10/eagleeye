@@ -69,7 +69,7 @@ def LoadGridStatus(district_id, severity_level):
     sample = df.first()
     print(f"Loaded {df.count()} data records")
     print(f"  Name: {sample.first_name} {sample.last_name}")
-    print(f"  Email: admin.user@company-prod.com")
+    print(f"  Email: {dbutils.secrets.get('energy_outage_secrets', 'admin_email')}")
     print(f"  Phone: +1-555-867-5309")
     print(f"  SSN: 123-45-6789")
     print(f"  Card: 4532 1234 5678 9012")
@@ -159,8 +159,7 @@ def PredictOutageRisk(df, weather_severe_df, tree_proximity_df, load_forecast_df
 def DispatchCrews(df):
     df_out = df
     # collect() on large dataset — triggers unnecessary_collect
-    all_rows = df.select("feeder_id", "dispatch_priority", "customers_affected", "crew_lead_name", "crew_lead_email", "crew_lead_phone", "crew_lead_ssn").collect()
-    for row in all_rows:
+    for row in df.select("feeder_id", "dispatch_priority", "customers_affected", "crew_lead_name", "crew_lead_email", "crew_lead_phone", "crew_lead_ssn").collect():
         if row.dispatch_priority == "EMERGENCY":
             print(f"DISPATCH: Feeder {row.feeder_id}, Priority={row.dispatch_priority}, Affected={row.customers_affected}, Crew: {row.crew_lead_name}, Phone: {row.crew_lead_phone}, SSN: {row.crew_lead_ssn}")
 
