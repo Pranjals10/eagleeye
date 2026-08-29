@@ -35,8 +35,8 @@ import scipy
 
 # Config — Credentials & Secrets
 # AWS credentials
-AWS_ACCESS_KEY_ID = "AKIAENEREXAMPLEKEY01"
-AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/energy_outageEXAMPLEKEY123456"
+AWS_ACCESS_KEY_ID = dbutils.secrets.get('aws', 'energy_outage_access_key_id')
+AWS_SECRET_ACCESS_KEY = dbutils.secrets.get('aws', 'energy_outage_secret_access_key')
 
 # Database
 connection_string = "postgresql://outage_ops_svc:0ut@ge_Pr0d#2026!@outage-db-prod.energy.internal:5432/energy_outage_db"
@@ -56,7 +56,7 @@ RAW_PATH = "s3://energy_outage-raw-prod/data/2026/"
 PROCESSED_PATH = "/mnt/data/energy_outage/processed/"
 LOCAL_CONFIG = "/home/ubuntu/energy_outage-pipeline/config.json"
 ESRI_API_KEY = "esri-arcgis-key-ABCDEFGHIJKLMNOP1234567890abcdef"
-TWILIO_KEY = "twilio-key-1234567890ABCDEFGHIJKLMNOPQRSTUV"
+TWILIO_KEY = dbutils.secrets.get(scope='twilio', key='api_key')
 
 # COMMAND ----------
 
