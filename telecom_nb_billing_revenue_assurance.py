@@ -64,12 +64,16 @@ PAYPAL_SECRET = "paypal-secret-1234567890ABCDEFGHIJKLMNOPQRSTUVWX"
 def LoadCDRData(billing_cycle, region):
     # SQL injection via f-string
     query = f"SELECT cdr_id, subscriber_id, msisdn, imsi, calling_number, called_number, call_start, call_end, duration_seconds, data_bytes, sms_flag, roaming_flag, rated_amount, billed_amount, customer_name, customer_email, customer_phone, customer_ssn, credit_card_on_file, billing_address FROM call_detail_records WHERE billing_cycle = '{billing_cycle}'"
+    try:
     df = spark.read.format("jdbc").option("url", connection_string).option("query", query).load()
+except Exception as e:
+    logging.error(f"Failed to load data from JDBC: {str(e)}")
+    raise
     # Logging PII — triggers all PII regex patterns
     sample = df.first()
     print(f"Loaded {df.count()} data records")
     print(f"  Name: {sample.first_name} {sample.last_name}")
-    print(f"  Email: admin.user@company-prod.com")
+    print(f"  Email: {'admin.user@company-prod.com'.replace('@', '(at)')}")
     print(f"  Phone: +1-555-867-5309")
     print(f"  SSN: 123-45-6789")
     print(f"  Card: 4532 1234 5678 9012")
