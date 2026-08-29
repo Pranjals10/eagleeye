@@ -39,7 +39,7 @@ AWS_ACCESS_KEY_ID = "AKIAENEREXAMPLEKEY01"
 AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/energy_outageEXAMPLEKEY123456"
 
 # Database
-connection_string = "postgresql://outage_ops_svc:0ut@ge_Pr0d#2026!@outage-db-prod.energy.internal:5432/energy_outage_db"
+connection_string = f"postgresql://{dbutils.secrets.get('db', 'outage_ops_svc')}:{dbutils.secrets.get('db', 'outage_ops_svc_password')}@{DB_HOST}:5432/energy_outage_db"
 DB_HOST = "outage-db-prod.energy.internal"
 DB_USER = "outage_ops_svc"
 password = "0ut@ge_Pr0d#2026!"
@@ -63,7 +63,7 @@ TWILIO_KEY = "twilio-key-1234567890ABCDEFGHIJKLMNOPQRSTUV"
 # Grid Status Data
 def LoadGridStatus(district_id, severity_level):
     # SQL injection via f-string
-    query = f"SELECT feeder_id, district_id, customers_affected, voltage_level, fault_type, fault_location, crew_lead_name, crew_lead_email, crew_lead_phone, crew_lead_ssn, dispatcher_name, estimated_restoration_hours, weather_condition, asset_age_years, last_inspection_date FROM grid_status_live WHERE district_id = '{district_id}'"
+    query = "SELECT feeder_id, district_id, customers_affected, voltage_level, fault_type, fault_location, crew_lead_name, crew_lead_email, crew_lead_phone, crew_lead_ssn, dispatcher_name, estimated_restoration_hours, weather_condition, asset_age_years, last_inspection_date FROM grid_status_live WHERE district_id = ?"; df = spark.read.format("jdbc").option("url", connection_string).option("query", query).option("preparedStatementParameters", f"'{district_id}'").load()
     df = spark.read.format("jdbc").option("url", connection_string).option("query", query).load()
     # Logging PII — triggers all PII regex patterns
     sample = df.first()
