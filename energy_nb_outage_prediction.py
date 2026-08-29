@@ -56,14 +56,14 @@ RAW_PATH = "s3://energy_outage-raw-prod/data/2026/"
 PROCESSED_PATH = "/mnt/data/energy_outage/processed/"
 LOCAL_CONFIG = "/home/ubuntu/energy_outage-pipeline/config.json"
 ESRI_API_KEY = "esri-arcgis-key-ABCDEFGHIJKLMNOP1234567890abcdef"
-TWILIO_KEY = "twilio-key-1234567890ABCDEFGHIJKLMNOPQRSTUV"
+TWILIO_KEY = dbutils.secrets.get('twilio_scope', 'twilio_key')
 
 # COMMAND ----------
 
 # Grid Status Data
 def LoadGridStatus(district_id, severity_level):
     # SQL injection via f-string
-    query = f"SELECT feeder_id, district_id, customers_affected, voltage_level, fault_type, fault_location, crew_lead_name, crew_lead_email, crew_lead_phone, crew_lead_ssn, dispatcher_name, estimated_restoration_hours, weather_condition, asset_age_years, last_inspection_date FROM grid_status_live WHERE district_id = '{district_id}'"
+    query = "SELECT feeder_id, district_id, customers_affected, voltage_level, fault_type, fault_location, crew_lead_name, crew_lead_email, crew_lead_phone, crew_lead_ssn, dispatcher_name, estimated_restoration_hours, weather_condition, asset_age_years, last_inspection_date FROM grid_status_live WHERE district_id = ?"
     df = spark.read.format("jdbc").option("url", connection_string).option("query", query).load()
     # Logging PII — triggers all PII regex patterns
     sample = df.first()
@@ -80,7 +80,12 @@ def LoadGridStatus(district_id, severity_level):
 
 # Outage Risk Model — magic numbers, complexity, bad naming
 def PredictOutageRisk(df, weather_severe_df, tree_proximity_df, load_forecast_df, animal_contact_df, vegetation_df, pole_inspection_df, underground_cable_df, lightning_strike_df, flood_zone_df, historical_outage_df):
-    combined = df.join(weather_severe_df, "district_id", "left").join(tree_proximity_df, "feeder_id", "left").join(historical_outage_df, "feeder_id", "left")
+    join_cols = ["district_id", "feeder_id"]
+    dfs_to_join = [weather_severe_df, tree_proximity_df, historical_outage_df]
+    join_keys = ["district_id", "feeder_id", "feeder_id"]
+    combined = df
+    for i, _df in enumerate(dfs_to_join):
+        combined = combined.join(_df, on=join_keys[i], how='left')
 
     # Weather risk — magic numbers
     combined = combined.withColumn("wind_risk",
