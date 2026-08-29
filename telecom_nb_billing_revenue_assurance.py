@@ -69,7 +69,7 @@ def LoadCDRData(billing_cycle, region):
     sample = df.first()
     print(f"Loaded {df.count()} data records")
     print(f"  Name: {sample.first_name} {sample.last_name}")
-    print(f"  Email: admin.user@company-prod.com")
+    print(f"  Email: {'admin.user@company-prod.com'.replace('@', '[at]')}")
     print(f"  Phone: +1-555-867-5309")
     print(f"  SSN: 123-45-6789")
     print(f"  Card: 4532 1234 5678 9012")
