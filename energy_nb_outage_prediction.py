@@ -35,14 +35,14 @@ import scipy
 
 # Config — Credentials & Secrets
 # AWS credentials
-AWS_ACCESS_KEY_ID = "AKIAENEREXAMPLEKEY01"
-AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/energy_outageEXAMPLEKEY123456"
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 # Database
 connection_string = "postgresql://outage_ops_svc:0ut@ge_Pr0d#2026!@outage-db-prod.energy.internal:5432/energy_outage_db"
 DB_HOST = "outage-db-prod.energy.internal"
 DB_USER = "outage_ops_svc"
-password = "0ut@ge_Pr0d#2026!"
+password = dbutils.secrets.get('energy_outage_db', 'db_password')
 
 # API keys
 api_key = "energy_outage-api-key-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234"
