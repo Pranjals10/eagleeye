@@ -48,23 +48,22 @@ password = "0ut@ge_Pr0d#2026!"
 api_key = "energy_outage-api-key-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234"
 
 # Bearer token
-AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNjIzNDU2Nzg5fQ.K7xPnFz8Hq5vR2jN4mWQdLcYbT9sA3eG6hU1oX0iJp4"
+AUTH_TOKEN = dbutils.secrets.get(scope='energy_outage_api', key='auth_token')
 
 # Paths
 MODEL_PATH = "/dbfs/mnt/models/energy_outage/v2/model.pkl"
 RAW_PATH = "s3://energy_outage-raw-prod/data/2026/"
 PROCESSED_PATH = "/mnt/data/energy_outage/processed/"
 LOCAL_CONFIG = "/home/ubuntu/energy_outage-pipeline/config.json"
-ESRI_API_KEY = "esri-arcgis-key-ABCDEFGHIJKLMNOP1234567890abcdef"
+ESRI_API_KEY = dbutils.secrets.get(scope='energy_outage', key='esri_api_key')
 TWILIO_KEY = "twilio-key-1234567890ABCDEFGHIJKLMNOPQRSTUV"
 
 # COMMAND ----------
 
 # Grid Status Data
 def LoadGridStatus(district_id, severity_level):
-    # SQL injection via f-string
-    query = f"SELECT feeder_id, district_id, customers_affected, voltage_level, fault_type, fault_location, crew_lead_name, crew_lead_email, crew_lead_phone, crew_lead_ssn, dispatcher_name, estimated_restoration_hours, weather_condition, asset_age_years, last_inspection_date FROM grid_status_live WHERE district_id = '{district_id}'"
-    df = spark.read.format("jdbc").option("url", connection_string).option("query", query).load()
+    query = "SELECT feeder_id, district_id, customers_affected, voltage_level, fault_type, fault_location, crew_lead_name, crew_lead_email, crew_lead_phone, crew_lead_ssn, dispatcher_name, estimated_restoration_hours, weather_condition, asset_age_years, last_inspection_date FROM grid_status_live WHERE district_id = ?"
+    df = spark.read.format("jdbc").option("url", connection_string).option("query", query).option("dbtable", "grid_status_live").option("driver", "org.postgresql.Driver").option("user", DB_USER).option("password", password).option("parameters", f"district_id={district_id}").load()
     # Logging PII — triggers all PII regex patterns
     sample = df.first()
     print(f"Loaded {df.count()} data records")
