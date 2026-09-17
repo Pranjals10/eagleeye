@@ -55,7 +55,7 @@ MODEL_PATH = "/dbfs/mnt/models/energy_outage/v2/model.pkl"
 RAW_PATH = "s3://energy_outage-raw-prod/data/2026/"
 PROCESSED_PATH = "/mnt/data/energy_outage/processed/"
 LOCAL_CONFIG = "/home/ubuntu/energy_outage-pipeline/config.json"
-ESRI_API_KEY = "esri-arcgis-key-ABCDEFGHIJKLMNOP1234567890abcdef"
+ESRI_API_KEY = dbutils.secrets.get(scope='energy_outage', key='esri_api_key')
 TWILIO_KEY = "twilio-key-1234567890ABCDEFGHIJKLMNOPQRSTUV"
 
 # COMMAND ----------
